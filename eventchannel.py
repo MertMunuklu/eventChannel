@@ -24,21 +24,38 @@ def kariyerNet():
     pass
 
 #Yapraklarım suda balık gibi kıvıl kıvıl, budak budak şerhan şerhan ihtiyar bir ceviz.
-def eventMag():
+def eventMag(a):
     driver = webdriver.Chrome()
     driver.get("https://eventmag.co/kategori/istanbul/")
     wait = WebDriverWait(driver, 10)  
     count = 0
     window_height = driver.execute_script("return window.innerHeight;")
-    for i in range(1,45):
+    the_event_title_list = []
+    the_event_type_list = []
+    the_date_and_the_place_list = []
+    the_list_of_lists = []
+    for i in range(1,a):
         count += 1
         the_event_title = wait.until(EC.visibility_of_element_located((By.XPATH, f"//*[@id='primary']/div/div/div[2]/div[{i}]/div[1]/div[2]/h5")))
-        print(the_event_title.text)
-        if (i == 8 or  i==16 or i == 20 or i == 22 or i == 28):
+        the_event_title_list.append(the_event_title.text)
+        the_event_type = wait.until(EC.visibility_of_element_located((By.XPATH,f"//*[@id='primary']/div/div/div[2]/div[{i}]/div[1]/div[2]/h6")))
+        the_event_type_list.append(the_event_type.text)
+        the_date_and_the_place = wait.until(EC.visibility_of_element_located((By.XPATH,f"//*[@id='primary']/div/div/div[2]/div[{i}]/div[1]/div[3]")))
+        the_date_and_the_place_list.append(the_date_and_the_place.text)
+        if (i == 8 or  i==16 or i == 20 or i == 22 or i == 28 or i == 34):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")  # Sayfanın en sonuna scroll et
             sleep(2)  
+    
+    dates = []
+    places = []
 
-    print(count)
+    for i in the_date_and_the_place_list:
+        date , place = i.split("\n")
+        dates.append(date)
+        places.append(place)
+
+    the_list_of_lists = [(a,b,c,d) for a,b,c,d in zip(the_event_title_list,the_event_type_list,dates,places)]
+    print(the_list_of_lists)
     driver.quit()
 
 def biletiniAl():
@@ -48,4 +65,4 @@ def biletiniAl():
     for name in names:
         print(name.text)
 
-eventMag()
+eventMag(7)
