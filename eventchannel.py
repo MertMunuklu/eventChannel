@@ -65,14 +65,19 @@ class eventMagScraper:
 
 class biletiniAl:
     def __init__(self):
-        pass
+        self.response = requests.get("https://biletinial.com/tr-tr/sinema/istanbul-avrupa")
+        self.soup = BeautifulSoup(self.response.content, 'html.parser')
         
-    response = requests.get("https://www.instagram.com/itubasinyayin/")
-    soup = BeautifulSoup(response.content, 'html.parser')
-    names = soup.find_all('h2')
-    for name in names:
-        print(name.text)
+    def scrape_cinema(self,date):
+        self.response = requests.get(f"https://biletinial.com/tr-tr/sinema/istanbul-avrupa?date=2024-05-{date}&filmtypeid=0&loc=0&thisweekend=")
+        self.soup = BeautifulSoup(self.response.content, 'html.parser')
+        namesS = []
+        names = self.soup.find_all('h3')
+        for name in names:
+            namesS.append(name.text)
+        return namesS
+    
 
-eventMag = eventMagScraper()
-events = eventMag.scrape_all(15)
-print(len(events))
+sinema = biletiniAl()
+movies = sinema.scrape_cinema(14)
+print(movies)
