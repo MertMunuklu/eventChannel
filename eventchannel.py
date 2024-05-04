@@ -67,17 +67,22 @@ class biletiniAl:
     def __init__(self):
         self.response = requests.get("https://biletinial.com/tr-tr/sinema/istanbul-avrupa")
         self.soup = BeautifulSoup(self.response.content, 'html.parser')
-        
+        self.namesS = []
     def scrape_cinema(self,date):
         self.response = requests.get(f"https://biletinial.com/tr-tr/sinema/istanbul-avrupa?date=2024-05-{date}&filmtypeid=0&loc=0&thisweekend=")
         self.soup = BeautifulSoup(self.response.content, 'html.parser')
-        namesS = []
         names = self.soup.find_all('h3')
         for name in names:
-            namesS.append(name.text)
-        return namesS
-    
+            self.namesS.append(name.text)
+        return self.namesS
+
+    def take_sessions(self,movie):
+        mainurlwithfilm = "https://biletinial.com/tr-tr/sinema/"
+        index = self.namesS.index(movie)
+        the_movie_str = self.namesS[index]
+        
 
 sinema = biletiniAl()
-movies = sinema.scrape_cinema(14)
+movies = sinema.scrape_cinema(15)
+totoro = sinema.take_sessions("Komşum Totoro")
 print(movies)
