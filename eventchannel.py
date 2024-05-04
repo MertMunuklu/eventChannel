@@ -7,6 +7,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import csv
 import requests
+import unicodedata
+
+def turkce_ingilizce_cevir(metin):
+    turkce_karakterler = "çğıöşüÇĞİÖŞÜ"
+    ingilizce_karakterler = "cgiosuCGIOSU"
+    cevirici = str.maketrans(turkce_karakterler, ingilizce_karakterler)
+    return metin.translate(cevirici)
+
 #Take a list from the user.
 def getListOfChannels(list_arg):
     if isinstance(list_arg, list):
@@ -77,12 +85,25 @@ class biletiniAl:
         return self.namesS
 
     def take_sessions(self,movie):
-        mainurlwithfilm = "https://biletinial.com/tr-tr/sinema/"
+        self.mainurlwithfilm = "https://biletinial.com/tr-tr/sinema/"
         index = self.namesS.index(movie)
-        the_movie_str = self.namesS[index]
-        
+        self.the_movie_str = self.namesS[index]
+    
+    def movie_descriptions(self):
+        mert = turkce_ingilizce_cevir(self.the_movie_str.lower().replace(" ","-"))
+        print(mert)
+        url_movie = self.mainurlwithfilm + mert
+        self.response = requests.get(url_movie)
+        self.soup = BeautifulSoup(self.response.content, 'html.parser')
+        desc = self.soup.find_all('div',class_ = "yds_cinema_movie_thread_info")
+        for a in desc:
+            print(a.text)
+
 
 sinema = biletiniAl()
 movies = sinema.scrape_cinema(15)
-totoro = sinema.take_sessions("Komşum Totoro")
-print(movies)
+totoro = sinema.take_sessions("Alev Almış Bir Genç Kızın Portresi")
+a = sinema.movie_descriptions() 
+print(a)
+    
+
